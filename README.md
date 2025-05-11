@@ -4,7 +4,10 @@ A simple but creative linked list implementation using **C**.
 
 ## 🔍 Overview
 
-This project is part of my **DSA-Series**, aiming to strengthen my understanding of core data structures while building a strong technical portfolio. This repository features an implementation of linked lists in C, demonstrating both my logic-building skills and programming style.
+This project is part of my **DSA-Series**, aiming to strengthen my understanding of core
+data structures while building a strong technical portfolio. 
+This repository features an implementation of linked lists in C, demonstrating both my
+ logic-building skills and programming style.
 
 ## 🚀 Goals
 
