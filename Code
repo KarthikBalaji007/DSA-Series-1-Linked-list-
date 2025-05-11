@@ -1,0 +1,200 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to store a song
+typedef struct Song {
+    char title[100];
+    char artist[100];
+    int duration;
+    struct Song* next;
+} Song;
+
+// Function to create a new song
+Song* createSong(const char* title, const char* artist, int duration) {
+    Song* newSong = (Song*)malloc(sizeof(Song));
+    if (newSong == NULL) {
+        printf("Memory allocation failed\n");
+        return NULL;
+    }
+    strcpy(newSong->title, title);
+    strcpy(newSong->artist, artist);
+    newSong->duration = duration;
+    newSong->next = NULL;
+    return newSong;
+}
+
+// Function to add a song to the end of the playlist
+void addSong(Song** head) {
+    char title[100];
+    char artist[100];
+    int duration;
+
+    printf("\nEnter song title: ");
+    scanf(" %[^\n]", title);  // Read string with spaces
+    printf("Enter artist name: ");
+    scanf(" %[^\n]", artist);
+    printf("Enter song duration in seconds: ");
+    scanf("%d", &duration);
+
+    Song* newSong = createSong(title, artist, duration);
+    if (*head == NULL) {
+        *head = newSong;
+    } else {
+        Song* temp = *head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newSong;
+    }
+    printf("Song added to the playlist!\n");
+}
+
+// Function to get the length of the playlist
+int getPlaylistLength(Song* head) {
+    int length = 0;
+    Song* temp = head;
+    while (temp != NULL) {
+        length++;
+        temp = temp->next;
+    }
+    return length;
+}
+
+// Function to add a song at a specific position
+void addSongAtPosition(Song** head) {
+    char title[100];
+    char artist[100];
+    int duration, position;
+
+    printf("\nEnter song title: ");
+    scanf(" %[^\n]", title);
+    printf("Enter artist name: ");
+    scanf(" %[^\n]", artist);
+    printf("Enter song duration in seconds: ");
+    scanf("%d", &duration);
+    printf("Enter position to insert the song (1-based index): ");
+    scanf("%d", &position);
+
+    int length = getPlaylistLength(*head);
+    if (position < 1 || position > length + 1) {
+        printf("Invalid position! Please enter a position between 1 and %d.\n", length + 1);
+        return;
+    }
+
+    Song* newSong = createSong(title, artist, duration);
+    if (!newSong) return;
+
+    if (position == 1) {
+        newSong->next = *head;
+        *head = newSong;
+    } else {
+        Song* temp = *head;
+        for (int i = 1; i < position - 1; i++) {
+            temp = temp->next;
+        }
+        newSong->next = temp->next;
+        temp->next = newSong;
+    }
+    printf("Song added at position %d in the playlist!\n", position);
+}
+
+// Function to remove a song by position
+void removeSong(Song** head) {
+    if (*head == NULL) {
+        printf("\nThe playlist is empty.\n");
+        return;
+    }
+
+    int position;
+    printf("\nEnter the position of the song to remove (1-based index): ");
+    scanf("%d", &position);
+
+    int length = getPlaylistLength(*head);
+    if (position < 1 || position > length) {
+        printf("Invalid position! Please enter a position between 1 and %d.\n", length);
+        return;
+    }
+
+    Song* temp = *head;
+    if (position == 1) {
+        *head = temp->next;
+        free(temp);
+    } else {
+        for (int i = 1; i < position - 1; i++) {
+            temp = temp->next;
+        }
+        Song* toDelete = temp->next;
+        temp->next = toDelete->next;
+        free(toDelete);
+    }
+    printf("Song removed from position %d.\n", position);
+}
+
+// Function to display the playlist
+void displayPlaylist(Song* head) {
+    if (head == NULL) {
+        printf("\nThe playlist is empty.\n");
+        return;
+    }
+
+    printf("\nPlaylist:\n");
+    Song* temp = head;
+    int index = 1;
+    while (temp != NULL) {
+        printf("%d. Title: %s, Artist: %s, Duration: %d seconds\n", index, temp->title, temp->artist, temp->duration);
+        temp = temp->next;
+        index++;
+    }
+}
+
+// Function to free the playlist
+void freePlaylist(Song* head) {
+    Song* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+    printf("\nPlaylist memory cleared.\n");
+}
+
+// Main function
+int main() {
+    Song* playlist = NULL;
+    int choice;
+
+    printf("Welcome to the Playlist Manager!\n");
+
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1 Add a Song\n");
+        printf("2 Add a Song at a Specific Position\n");
+        printf("3 Remove a Song\n");
+        printf("4 Display Playlist\n");
+        printf("5 Exit\n");
+        printf("Enter your choice: \t");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addSong(&playlist);
+                break;
+            case 2:
+                addSongAtPosition(&playlist);
+                break;
+            case 3:
+                removeSong(&playlist);
+                break;
+            case 4:
+                displayPlaylist(playlist);
+                break;
+            case 5:
+                freePlaylist(playlist);
+                printf("Goodbye!\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+}
